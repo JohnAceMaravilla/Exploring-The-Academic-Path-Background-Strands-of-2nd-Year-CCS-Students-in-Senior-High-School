@@ -1,0 +1,129 @@
+# Importing Libraries
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+# Data Loading, Cleaning and Preprocessing
+df = pd.read_csv('background_strand_dataset.csv')
+df.fillna(df.mean(numeric_only=True), inplace=True)
+df['AGE'] = pd.to_numeric(df['AGE'], errors='coerce')
+df = df[df['AGE'] >= 0]
+df.head()
+
+
+# Pie Chart for Distribution of Respondents According to their Sex
+sex_counts = df['SEX'].value_counts()
+plt.figure(figsize=(6, 6))
+colors = ['blue', 'pink']
+plt.pie(sex_counts, labels=sex_counts.index, autopct='%1.1f%%', startangle=90, colors=colors)
+plt.legend(sex_counts.index, loc="upper right", bbox_to_anchor=(1, 0, 0.5, 1))
+plt.title('Pie Chart 1: Distribution of Respondents According to their Sex')
+plt.show()
+
+
+# Pie Chart for Distribution of Respondents According to their Age
+age_counts = df['AGE'].value_counts()
+age_counts = age_counts.sort_index()
+colors = plt.cm.Paired(range(len(age_counts)))
+plt.figure(figsize=(8, 8))
+plt.pie(age_counts, labels=age_counts.index, autopct='%1.1f%%', startangle=90, colors=colors)
+plt.legend(age_counts.index, loc="upper right", bbox_to_anchor=(1, 0, 0.5, 1))
+plt.title('Pie Chart 2: Distribution of Respondents According to their Age')
+plt.show()
+
+
+# Pie Chart for Distribution of Respondents According to their Course, Year & Section
+cys_counts = df['COURSE_YEAR_SECTION'].value_counts()
+desired_order = ['BSIT 2A', 'BSIT 2B', 'BSIT 2C', 'BSIT 2D', 'BSIT 2E', 'BS COMSCI 2A', 'BS COMSCI 2B']
+cys_counts = cys_counts.reindex(desired_order)
+cys_counts = cys_counts.dropna()
+colors = plt.cm.Paired(range(len(cys_counts)))
+
+plt.figure(figsize=(8, 8))
+plt.pie(cys_counts, labels=cys_counts.index, autopct='%1.1f%%', startangle=90, colors=colors)
+plt.legend(cys_counts.index, loc="upper right", bbox_to_anchor=(1, 0, 0.5, 1))
+plt.title('Pie Chart 3: Distribution of Respondents According to their Course, Year & Section')
+plt.show()
+
+
+# Pie Chart for Distribution of Respondents According to their SHS Strand
+strand_counts = df['SHS_STRAND'].value_counts()
+plt.figure(figsize=(8, 8))
+colors = plt.cm.Paired(range(len(strand_counts)))
+plt.pie(strand_counts, labels=strand_counts.index, autopct='%1.1f%%', startangle=90, colors=colors)
+plt.legend(strand_counts.index, loc="upper right", bbox_to_anchor=(1, 0, 0.5, 1))
+plt.title('Pie Chart 4: Distribution of Respondents According to their SHS Strand')
+plt.show()
+
+
+# Data Visualization for Strand Alignment Satisfactory
+overall_mean_values = df[['Strand_Alignment_Q1', 'Strand_Alignment_Q2', 'Strand_Alignment_Q3']].mean()
+overall_weighted_mean = df[['Strand_Alignment_Q1', 'Strand_Alignment_Q2', 'Strand_Alignment_Q3']].mean().mean()
+strands = ['ICT', 'STEM', 'HUMSS', 'GAS', 'TVL']
+strand_mean_values = {}
+print(f'\nWeighted Mean:')
+print(overall_mean_values.round(2))
+print(f'\nOverall Weighted Mean: ', overall_weighted_mean.round(2))
+print()
+
+bar_width = 0.1
+bar_positions = np.arange(len(overall_mean_values))
+plt.bar(bar_positions, overall_mean_values.values, width=bar_width, label='All Strands', alpha=0.7, color='black')
+
+for i, strand in enumerate(strands):
+    strand_df = df[df['SHS_STRAND'] == strand]
+    strand_mean_values[strand] = strand_df[['Strand_Alignment_Q1', 'Strand_Alignment_Q2', 'Strand_Alignment_Q3']].mean()
+    strand_overall_weighted_mean = strand_df[['Strand_Alignment_Q1', 'Strand_Alignment_Q2', 'Strand_Alignment_Q3']].mean().mean()
+    plt.bar(bar_positions + (i + 1) * bar_width, strand_mean_values[strand].values, width=bar_width, label=strand, alpha=0.7)
+
+    print(f'\n{strand} Weighted Mean:')
+    print(strand_mean_values[strand].round(2))
+    print(f'\n{strand} Overall Weighted Mean: ', strand_overall_weighted_mean.round(2))
+    print()
+
+print(f'\n')
+combined_labels = list(overall_mean_values.index)
+plt.xticks(bar_positions + (len(strands) / 2) * bar_width, combined_labels)
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+plt.title('Bar Graph 1: Strand Alignment Satisfactory')
+plt.xlabel('Questions')
+plt.ylabel('Mean')
+plt.show()
+
+
+# Data Visualization for Learning Adaptability
+overall_mean_values = df[['Learning_Adaptability_Q1', 'Learning_Adaptability_Q2', 'Learning_Adaptability_Q3', 'Learning_Adaptability_Q4', 'Learning_Adaptability_Q5']].mean()
+overall_weighted_mean = df[['Learning_Adaptability_Q1', 'Learning_Adaptability_Q2', 'Learning_Adaptability_Q3', 'Learning_Adaptability_Q4', 'Learning_Adaptability_Q5']].mean().mean()
+strands = ['ICT', 'STEM', 'HUMSS', 'GAS', 'TVL']
+strand_mean_values = {}
+print(f'\nWeighted Mean:')
+print(overall_mean_values.round(2))
+print(f'\nOverall Weighted Mean: ', overall_weighted_mean.round(2))
+print()
+
+bar_width = 0.1
+bar_positions = np.arange(len(overall_mean_values))
+plt.bar(bar_positions, overall_mean_values.values, width=bar_width, label='All Strands', alpha=0.7, color='black')
+
+for i, strand in enumerate(strands):
+    strand_df = df[df['SHS_STRAND'] == strand]
+    strand_mean_values[strand] = strand_df[['Learning_Adaptability_Q1', 'Learning_Adaptability_Q2', 'Learning_Adaptability_Q3', 'Learning_Adaptability_Q4', 'Learning_Adaptability_Q5']].mean()
+    strand_overall_weighted_mean = strand_df[['Learning_Adaptability_Q1', 'Learning_Adaptability_Q2', 'Learning_Adaptability_Q3', 'Learning_Adaptability_Q4', 'Learning_Adaptability_Q5']].mean().mean()
+    plt.bar(bar_positions + (i + 1) * bar_width, strand_mean_values[strand].values, width=bar_width, label=strand, alpha=0.7)
+
+    print(f'\n{strand} Weighted Mean:')
+    print(strand_mean_values[strand].round(2))
+    print(f'\n{strand} Overall Weighted Mean: ', strand_overall_weighted_mean.round(2))
+    print()
+
+print(f'\n')
+combined_labels = list(overall_mean_values.index)
+plt.xticks(bar_positions + (len(strands) / 1.5) * bar_width, combined_labels, rotation=75, ha='center')
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+plt.title('Bar Graph 2: Learning Adaptability')
+plt.xlabel('Questions')
+plt.ylabel('Mean')
+plt.tight_layout()
+plt.show()
+
